@@ -1,4 +1,4 @@
-// index.js
+require('dotenv').config(); // 🔼 Load environment variables
 const express = require('express');
 const { Pool } = require('pg');
 
@@ -18,9 +18,9 @@ app.get('/', async (req, res) => {
     const result = await pool.query('SELECT NOW()');
     res.send(`Database time: ${result.rows[0].now}`);
   } catch (err) {
+    console.error(err); // 🔴 Helpful for debugging
     res.status(500).send('Database connection error');
   }
 });
 
-// ✅ Don't listen here
 module.exports = app;
