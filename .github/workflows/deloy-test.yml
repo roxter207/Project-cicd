@@ -16,8 +16,10 @@ jobs:
 
       - name: Add SSH Private Key
         run: |
-          echo "${{ secrets.TEST_SSH_KEY }}" | base64 -d > private_key
-          chmod 600 private_key
+          mkdir -p ~/.ssh
+          echo "${{ secrets.TEST_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.TEST_SERVER_IP }} >> ~/.ssh/known_hosts
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@master
