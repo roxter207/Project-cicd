@@ -16,8 +16,10 @@ const pool = new Pool({
 app.get('/', async (req, res) => {
   try {
     const result = await pool.query('SELECT NOW()');
-    res.send('Welcome to our simple CICD project');
-    res.send(`Database time: ${result.rows[0].now}`);
+    res.send(`
+  <p>Welcome to our simple CICD project</p>
+  <p>Database time: ${new Date().toISOString()}</p>
+`);
   } catch (err) {
     console.error(err); // 🔴 Helpful for debugging
     res.status(500).send('Database connection error');
