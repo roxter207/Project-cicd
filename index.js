@@ -16,7 +16,7 @@ const pool = new Pool({
 app.get('/', async (req, res) => {
   try {
     const result = await pool.query('SELECT NOW()');
-    res.set('X-Custom-Welcome', 'Welcome to our simple CICD project');
+    res.send('Welcome to our simple CICD project');
     res.send(`Database time: ${result.rows[0].now}`);
   } catch (err) {
     console.error(err); // 🔴 Helpful for debugging
