@@ -30,7 +30,7 @@ app.get('/', async (req, res) => {
     res.send(`
   <html>
     <head>
-      <title>Todo List</title>
+      <title>My Todo List</title>
       <style>
         body {
           margin: 0;
