@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run tests
-        run: npm test
+        run: npx jest
       - name: Build
         run: npm install
       - name: Archive test results
