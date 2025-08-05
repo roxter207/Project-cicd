@@ -1,0 +1,36 @@
+name: Deploy to Testing
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy App to AWS EC2 Test Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Add SSH Private Key
+        run: |
+          echo "${{ secrets.TEST_SSH_KEY }}" | base64 -d > private_key
+          chmod 600 private_key
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.TEST_SERVER_IP }}
+          username: ec2-user  # 👈 Use ec2-user for Amazon Linux
+          key: ${{ secrets.TEST_SSH_KEY }}
+          script: |
+            cd ~/app || mkdir ~/app && cd ~/app
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/<your-username>/<your-repo> .
+            else
+              git pull origin main
+            fi
+            docker-compose down
+            docker-compose up -d --build
