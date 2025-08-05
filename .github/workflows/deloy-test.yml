@@ -14,17 +14,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy using SSH
+      - name: Add SSH Private Key
+        run: |
+          echo "${{ secrets.TEST_SSH_KEY }}" | base64 -d > private_key
+          chmod 600 private_key
+
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@master
         with:
-          host: ec2-100-24-44-140.compute-1.amazonaws.com
-          username: ec2-user
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.TEST_SERVER_IP }}
+          username: ec2-user  # 👈 Use ec2-user for Amazon Linux
+          key: ${{ secrets.TEST_SSH_KEY }}
           script: |
-            echo "✅ Connected to EC2"
             cd ~/app || mkdir ~/app && cd ~/app
             if [ ! -d ".git" ]; then
-              git clone https://github.com/roxter207/Project-cicd.git 
+              git clone https://github.com/<your-username>/<your-repo> .
             else
               git pull origin main
             fi
