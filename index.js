@@ -114,7 +114,7 @@ app.get('/', async (req, res) => {
     </head>
     <body>
       <div class="container">
-        <h2>📝 My Todo List</h2>
+        <h2>📝 My Todo </h2>
         <form method="POST" action="/add">
           <input name="task" required placeholder="Enter a task" />
           <button type="submit">Add</button>
