@@ -1,7 +1,9 @@
 name: Ansible Configure Production
 
 on:
-  workflow_dispatch:  # Manual trigger. You can change to `push` or `deployment` if needed
+  push:
+    branches:
+      - main
 
 jobs:
   configure:
