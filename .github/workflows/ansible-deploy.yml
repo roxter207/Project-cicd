@@ -1,34 +1,39 @@
-name: Deploy to EC2 with Ansible
+name: Ansible Configure Production
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:  # Manual trigger. You can change to `push` or `deployment` if needed
 
 jobs:
-  deploy:
-    name: Deploy via Ansible
+  configure:
+    name: Configure EC2 using Ansible
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up SSH key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
 
     - name: Install Ansible
       run: |
-        sudo apt update
-        sudo apt install -y ansible
+        pip install --upgrade pip
+        pip install ansible
+
+    - name: Set up SSH Key for Ansible
+      run: |
+        echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
+        chmod 600 private_key.pem
+        mkdir -p ~/.ssh
+        ssh-keyscan ${{ secrets.HOST_DNS }} >> ~/.ssh/known_hosts
+
+    - name: Generate Dynamic Ansible Inventory
+      run: |
+        echo "[web]" > inventory.ini
+        echo "${{ secrets.HOST_DNS }} ansible_user=ec2-user ansible_ssh_private_key_file=private_key.pem" >> inventory.ini
 
     - name: Run Ansible Playbook
       run: |
-        ansible-playbook -i '${{ secrets.EC2_HOST }},' ansible/playbook.yml \
-          --user ec2-user \
-          --private-key ~/.ssh/id_rsa \
-          -e "ansible_python_interpreter=/usr/bin/python3"
+        ansible-playbook ansible/playbook.yml -i inventory.ini
