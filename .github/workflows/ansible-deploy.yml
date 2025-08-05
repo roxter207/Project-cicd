@@ -1,0 +1,41 @@
+name: Ansible Configure Production
+
+on:
+   push:
+    branches:
+      - main
+
+jobs:
+  configure:
+    name: Configure EC2 using Ansible
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install Ansible
+      run: |
+        pip install --upgrade pip
+        pip install ansible
+
+    - name: Set up SSH Key for Ansible
+      run: |
+        echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
+        chmod 600 private_key.pem
+        mkdir -p ~/.ssh
+        ssh-keyscan ${{ secrets.HOST_DNS }} >> ~/.ssh/known_hosts
+
+    - name: Generate Dynamic Ansible Inventory
+      run: |
+        echo "[web]" > inventory.ini
+        echo "${{ secrets.HOST_DNS }} ansible_user=ec2-user ansible_ssh_private_key_file=${{ secrets.EC2_SSH_KEY}}" >> inventory.ini
+
+    - name: Run Ansible Playbook
+      run: |
+        ansible-playbook ansible/playbook.yml -i inventory.ini
