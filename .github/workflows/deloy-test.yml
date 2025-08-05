@@ -23,6 +23,6 @@ jobs:
         ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }} << 'EOF'
           cd ~/app || git clone https://github.com/roxter207/Project-cicd.git ~/app && cd ~/app
           git pull origin main
-          docker-compose down
-          docker-compose up -d --build
+          docker compose down
+          docker compose up -d --build
         EOF
