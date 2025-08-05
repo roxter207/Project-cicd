@@ -1,11 +1,15 @@
-- name: Install PostgreSQL on Debian/Ubuntu
-  apt:
-    name: postgresql
-    state: present
-  when: ansible_os_family == "Debian"
+- name: Install PostgreSQL on Amazon Linux / RHEL
+  block:
+    - name: Enable the PostgreSQL repo
+      command: amazon-linux-extras enable postgresql14
+      args:
+        creates: /etc/yum.repos.d/amzn2-extras.repo
 
-- name: Install PostgreSQL on RHEL/Amazon Linux
-  yum:
-    name: postgresql-server
-    state: present
-  when: ansible_os_family in ["RedHat", "Amazon"]
+    - name: Install PostgreSQL
+      yum:
+        name:
+          - postgresql
+          - postgresql-server
+          - postgresql-contrib
+        state: present
+  when: ansible_os_family == "RedHat"
