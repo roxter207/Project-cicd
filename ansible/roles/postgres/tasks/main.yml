@@ -1,15 +1,14 @@
-- name: Install PostgreSQL on Amazon Linux / RHEL
-  block:
-    - name: Enable the PostgreSQL repo
-      command: amazon-linux-extras enable postgresql14
-      args:
-        creates: /etc/yum.repos.d/amzn2-extras.repo
+- name: Check if PostgreSQL is already installed
+  command: psql --version
+  register: postgres_check
+  ignore_errors: yes
 
-    - name: Install PostgreSQL
-      yum:
+- name: Install PostgreSQL only if not already installed
+  when: postgres_check.rc != 0
+  block:
+    - name: Install PostgreSQL (fallback method)
+      dnf:
         name:
-          - postgresql
-          - postgresql-server
-          - postgresql-contrib
+          - postgresql14
+          - postgresql14-server
         state: present
-  when: ansible_os_family == "RedHat"
