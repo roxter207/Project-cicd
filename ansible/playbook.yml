@@ -1,0 +1,6 @@
+- name: Configure Production Server
+  hosts: web
+  become: true
+  roles:
+    - node
+    - postgres
