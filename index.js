@@ -1,5 +1,7 @@
+// index.js
 const express = require('express');
 const { Pool } = require('pg');
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -20,6 +22,5 @@ app.get('/', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+// ✅ Don't listen here
+module.exports = app;
