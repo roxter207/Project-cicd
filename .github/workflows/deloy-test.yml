@@ -21,8 +21,15 @@ jobs:
     - name: SSH into EC2 and deploy
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }} << 'EOF'
-          cd ~/app || git clone https://github.com/roxter207/Project-cicd.git ~/app && cd ~/app
-          git pull origin main
-          docker compose down
-          docker compose up -d --build
+        if [ ! -d ~/app ]; then
+          git clone https://github.com/roxter207/Project-cicd.git ~/app
+        fi
+        cd ~/app
+        git fetch origin
+        git reset --hard origin/main
+        echo "Latest commit:"
+        git log -1 --oneline
+        docker compose down
+        docker compose up -d --build
+        docker compose ps
         EOF
