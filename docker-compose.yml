@@ -14,5 +14,21 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  app:
+    build: .
+    container_name: my_todo_app
+    ports:
+      - "3000:3000"
+    environment:
+      DB_USER: myuser
+      DB_PASSWORD: mypassword
+      DB_NAME: mydb
+      DB_HOST: postgres
+      DB_PORT: 5432
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+
 volumes:
   pgdata:
