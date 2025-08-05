@@ -1,14 +1,12 @@
 - name: Check if PostgreSQL is already installed
-  command: psql --version
-  register: postgres_check
-  ignore_errors: yes
+  stat:
+    path: /usr/bin/psql
+  register: psql_path
 
-- name: Install PostgreSQL only if not already installed
-  when: postgres_check.rc != 0
-  block:
-    - name: Install PostgreSQL (fallback method)
-      dnf:
-        name:
-          - postgresql14
-          - postgresql14-server
-        state: present
+- name: Install PostgreSQL 15 if not present
+  when: not psql_path.stat.exists
+  yum:
+    name:
+      - postgresql15
+      - postgresql15-server
+    state: present
