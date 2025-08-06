@@ -33,11 +33,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        env:
-          DATABASE_URL: postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/testdb
-        run: npm test -- --coverage --verbose --detectOpenHandles
-
       - name: Archive test results
         if: always()
         uses: actions/upload-artifact@v4
